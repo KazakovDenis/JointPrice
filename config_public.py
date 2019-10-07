@@ -68,3 +68,5 @@ all_product_parameters = {
     'omologation': {'svrauto': 'HOMOLOGATION', 'pwrs': 'omolog', 'trektyre': 'tag'},
     'cartype': {'svrauto': 'CARTYPE', 'pwrs': 'tiretype', 'trektyre': 'tag'},
 }
+
+suppliers = [svrauto, pwrs, trektyre]

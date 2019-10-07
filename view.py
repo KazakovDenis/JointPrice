@@ -12,9 +12,7 @@ def index():
         # здесь будет обработка формы поиска
         return render_template('index.html')
 
-    svr = PriceList(svrauto, 'truck_tires')
-    filters_ = {'NPRICE_RRP': 10600, 'SMARKA': 'SATOYA', 'NREST': 2}
-    found = svr.show_products_as_dicts(**filters_)
+    found = None
     return render_template('index.html', products=found)
 
 

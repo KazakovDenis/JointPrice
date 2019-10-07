@@ -15,10 +15,11 @@ def start():
     check = input('Are you sure database has been created and config.py has been edited? [y/n] --> ').lower()
     if check == 'y':
         init_tables_from_models()
+        os.system('mkdir data && mkdir prices')
         os.system('python manage.py db init')
         os.system('python manage.py db migrate')
         os.system('python manage.py db upgrade')
-    print('Project is ready!')
+        print('Project is ready!')
 
 
 if __name__ == '__main__':

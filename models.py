@@ -148,17 +148,22 @@ class PriceList:
 class PriceHandler:
     """ It extracts products from Price """
     def __init__(self, price_obj):
-        self.product_elements = price_obj.get_product_elements()
         self.supplier = price_obj.supplier
+        self.product_elements = price_obj.get_product_elements()
+        self.product_generator = self.generate_product()
 
     def generate_product(self):
         for product_element in self.product_elements:
-            if product_element.tag == 'DESCRIPTION': continue
+            if product_element.tag == 'DESCRIPTION':
+                continue
             yield product_element
 
     def extract_product_parameters(self):
         """ Returns a dictionary of product parameters """
-        product_element = next(self.generate_product())
+        try:
+            product_element = next(self.product_generator)
+        except StopIteration:
+            return None
         product_parameters = dict()
         for parameter in all_product_parameters:
             for element in product_element:
@@ -168,7 +173,10 @@ class PriceHandler:
                     else:
                         product_parameters[parameter] = element.text
         product_parameters['supplier'] = self.supplier
-        product_parameters['low_price'] = int(product_parameters['purchase_price'] * 1.05)
+        try:
+            product_parameters['low_price'] = int(product_parameters['purchase_price'] * 1.05)
+        except KeyError:
+            pass
         return product_parameters
 
 
