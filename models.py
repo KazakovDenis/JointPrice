@@ -11,14 +11,12 @@ from jointprices import db
 from config import svrauto, pwrs, trektyre, all_product_parameters
 
 
-def get_response(url,
-                 useragent={'User-Agent': 'Mozilla/5.0 (Windows NT 6.1; WOW64; rv:23.0) Gecko/20100101 Firefox/23.0'},
-                 proxy={'http': 'http://173.249.35.163:1448', 'https': 'http://173.249.35.163:1448'}):
-    """ Получаем ответ страницы по урл с паузой. Ожидаем <Response [200]> """
+def get_response(url):
+    """ Returns response. Looking for <Response [200]> """
     print(f'\nConnecting to {url}')
     try:
-        response = requests.get(url, headers=useragent, proxies=proxy, timeout=90)
-        # делаем паузу
+        useragent = {'User-Agent': 'Mozilla/5.0 (Windows NT 6.1; WOW64; rv:23.0) Gecko/20100101 Firefox/23.0'}
+        response = requests.get(url, headers=useragent, timeout=90)
         pause = uniform(2, 9)
         sleep(pause)
         return response

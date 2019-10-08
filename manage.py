@@ -9,22 +9,18 @@ from run import *
 
 
 def download_prices_of(supplier):
+    if supplier['title'] == 'svrauto':
+        os.system('python svrauto.py')
+        return
     for price in supplier:
         if price != 'title':
             price_obj = PriceList(supplier, price)
             price_obj.download()
 
 
-def download_svrauto():
-    os.system('python svrauto.py')
-
-
 def download_all_prices():
     for supplier in suppliers:
-        if supplier['title'] != 'svrauto':
-            download_prices_of(supplier)
-        else:
-            download_svrauto()
+        download_prices_of(supplier)
 
 
 def check_relevance(obj):
