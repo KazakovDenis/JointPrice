@@ -5,6 +5,7 @@ data
 venv
 test.py
 parser.py
+svrauto.py
 
 # Created by https://www.gitignore.io/api/flask,python,windows
 # Edit at https://www.gitignore.io/?templates=flask,python,windows

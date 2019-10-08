@@ -12,6 +12,8 @@
 
 
 # done:
+- added update_db
+-----------------------------------------------------------------
 - fixed check_relevance with AttributeError
 - fixed KeyError in extract_product_parameters
 
@@ -25,4 +27,5 @@
 
 # После загрузки на сервер:
 1. Проверить config.py на актуальность параметров
-2. Запустить startproject.py
+2. pip install -r requirements.txt
+3. Запустить startproject.py
