@@ -1,6 +1,7 @@
 # -*- coding: utf-8 -*-
 # https://github.com/KazakovDenis
 import os
+from threading import Thread
 from jointprices import manager, db
 from config import suppliers
 from models import *
@@ -9,13 +10,21 @@ from run import *
 
 
 def download_prices_of(supplier):
-    if supplier['title'] == 'svrauto':
-        os.system('python svrauto.py')
-        return
-    for price in supplier:
-        if price != 'title':
-            price_obj = PriceList(supplier, price)
+    def _download(price_list):
+        if price_list != 'title':
+            price_obj = PriceList(supplier, price_list)
             price_obj.download()
+    # starting svrauto in a parallel thread
+    if supplier['title'] == 'svrauto':
+        def _download_svr():
+            for price_ in supplier:
+                _download(price_)
+                sleep(60 * 11)
+        Thread(target=_download_svr).start()
+    else:
+        # loading another supplier's prices
+        for price in supplier:
+            _download(price)
 
 
 def download_all_prices():

@@ -11,8 +11,9 @@
 
 
 # done:
-- added svrauto download
+- rewrited svrauto download to a separate thread
 -----------------------------------------------------------------
+- added svrauto download
 - added update_db
 - fixed check_relevance with AttributeError
 - fixed KeyError in extract_product_parameters

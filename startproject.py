@@ -1,6 +1,9 @@
 # -*- coding: utf-8 -*-
 # https://github.com/KazakovDenis
+from jointprices import db
+from manage import download_all_prices
 from models import *
+from config import *
 import os
 """ Module executes functions to start the project """
 
@@ -19,7 +22,7 @@ def start():
         os.system('python manage.py db init')
         os.system('python manage.py db migrate')
         os.system('python manage.py db upgrade')
-        print('Project is ready!')
+        print('Project is ready! You may now download prices.')
 
 
 if __name__ == '__main__':
