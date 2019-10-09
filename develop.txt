@@ -1,18 +1,26 @@
 # todo:
 - разобраться, почему пишет товары, которые уже есть в базе
 - если не соответсвует контрольной сумме, то делает новую запись, а не обновляет старую
+- отсечь из pwrs.car_tires не шины
+- tree неправильно определяется в pwrs
 
 - добавить логгирование
 - заполнение базы:
 ... скачать поочерёдно все прайс-листы (скачивание прайсов Север авто не чаще, чем каждые 15 минут)
+- исправить исключение с кодировкой
 ... загрузить в базу данных
+- исправить ошибки с типами данных
+self.selling_price = int(kwargs.get('purchase_price') * 1.2)
+TypeError: unsupported operand type(s) for *: 'NoneType' and 'float'
 ... при загрузке проверять актуальность цен и остатков:
 ... ... если актуально - пропускать, при отсутствии в прайсе - обнулять
 
 
 # done:
-- rewrited svrauto download to a separate thread
+- fixed selling price
+- restricted to adding categories until the development of relevant models
 -----------------------------------------------------------------
+- rewrited svrauto download to a separate thread
 - added svrauto download
 - added update_db
 - fixed check_relevance with AttributeError

@@ -22,7 +22,13 @@ def start():
         os.system('python manage.py db init')
         os.system('python manage.py db migrate')
         os.system('python manage.py db upgrade')
-        print('Project is ready! You may now download prices.')
+        response = input('The project is ready! Should I download prices or will you do it later? [y/n] --> ').lower()
+        if response == 'y':
+            print('Ok! It will take some time.')
+            download_all_prices()
+            print('Download is complete! Now you can fill up the database with update_db_entirely() from manage.py')
+        else:
+            print('For this purpose use download_all_prices() from manage.py')
 
 
 if __name__ == '__main__':

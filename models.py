@@ -47,13 +47,13 @@ class PriceList:
             response.encoding = 'utf-8'
             xml_object = response.text
 
-            with open(f'prices/{self.file_name}', 'w', encoding='utf8') as cached:
+            with open(f'prices/{self.file_name}', 'w', encoding='utf-8') as cached:
                 cached.write(xml_object)
 
     def get_tree(self):
         """ Gets an XML tree of cached price """
         if os.path.exists(f'prices/{self.file_name}'):
-            with open(f'prices/{self.file_name}', 'r', encoding='utf8') as cached:
+            with open(f'prices/{self.file_name}', 'r', encoding='utf-8', errors='ignore') as cached:
                 xml_object = cached.read()
             tree = ET.fromstring(xml_object)[0]
             return tree
@@ -220,7 +220,7 @@ class CarTire(Product):
         self.category = 'Шины легковые'
         self.runflat = True if kwargs.get('runflat') else False
         self.powerload = True if kwargs.get('powerload') else False
-        self.selling_price = int(kwargs.get('purchase_price') * 1.2)
+        self.selling_price = int((kwargs.get('purchase_price') or 0) * 1.2)
 
 # class CarRim(Product):
 #     pass
