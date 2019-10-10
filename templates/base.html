@@ -17,6 +17,15 @@
   <body class="d-flex flex-column h-100">
     <div class="container-fluid">
       <div class="row text-white bg-secondary">
+        <div class="container">
+          <div class="row text-white">
+              <a href="{{ url_for('search', category='car-tires') }}" class="text-white"><div class="col">Шины легковые</div></a>
+              <a href="{{ url_for('search', category='truck-tires') }}" class="text-white"><div class="col">Шины грузовые</div></a>
+              <a href="{{ url_for('search', category='car-rims') }}" class="text-white"><div class="col">Диски легковые</div></a>
+              <a href="{{ url_for('search', category='truck-rims') }}" class="text-white"><div class="col">Диски грузовые</div></a>
+              <a href="{{ url_for('search', category='batteries') }}" class="text-white"><div class="col">Аккумуляторы</div></a>
+          </div>
+        </div>
       {% block filter %}
 
       {% endblock %}
