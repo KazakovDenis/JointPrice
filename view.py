@@ -1,9 +1,15 @@
 # -*- coding: utf-8 -*-
 # https://github.com/KazakovDenis
-from flask import render_template, request, flash
+from flask import render_template, request
 from jointprices import app
-from models import CarTire
+from models import CarTire, Product
+from config import all_product_parameters as aprp
 from forms import *
+
+
+@app.route('/')
+def index():
+    return render_template('index.html')
 
 
 category_form = {
@@ -13,11 +19,6 @@ category_form = {
     'truck-rims': TruckRimSearch,
     'batteries': BatterySearch
 }
-
-
-@app.route('/')
-def index():
-    return render_template('index.html')
 
 
 @app.route('/search/', methods=['POST', 'GET'])
@@ -30,14 +31,27 @@ def search(category='car-tires'):
     if request.method == 'POST':
         params = dict()
         for field in get_fields(form):
-            value = request.form.get(f'{field}')
+            value = request.form.get(f'{field}') if field != 'secret' else None
             if value and 'None' not in value:
                 params[field] = int(value) if value.isdigit() else value
+        # hiding the purchase price from prying eyes
+        secret = request.form.get('secret')
         found = CarTire.query.filter_by(**params).all()
-        print(params, '\n', found)
-        return render_template('search.html', form=form, products=found)
+        # grouping products by article
+        articles = set([product.__dict__.get('article') for product in found])
+        filtered = [list(filter(lambda x: x.article == article, found)) for article in articles]
+        return render_template('search.html', form=form, products=filtered, secret=secret)
 
     return render_template('search.html', form=form)
+
+
+@app.route('/products/<slug>')
+def render_product(slug=None):
+    product = CarTire.query.filter_by(id=slug).first_or_404()
+    main_params = [product.title, product.img, product.count, product.updated, product.supplier, product.purchase_price,
+                   product.retail_price, product.selling_price, product.low_price, product.id, product.address,
+                   product._sa_instance_state, product.category]
+    return render_template('product.html', product=product, main_params=main_params, titles=aprp)
 
 
 @app.errorhandler(404)

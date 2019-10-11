@@ -14,6 +14,7 @@ class ProductForm(Form):
     article = StringField('Артикул')
     _supplier_choices = [(None, 'Все')] + [(supplier['title'], supplier['title']) for supplier in suppliers]
     supplier = SelectField('Поставщик', choices=_supplier_choices)
+    secret = BooleanField(label=' ')
     count = StringField('Количество')
 
 
@@ -40,5 +41,5 @@ class TruckRimSearch(ProductForm):
     pass
 
 
-class BatterySearch(Form):
+class BatterySearch(ProductForm):
     pass

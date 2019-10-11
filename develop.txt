@@ -4,11 +4,16 @@
 - добавить логгирование
 - сделать поиск по базе не по точному соответствию, а по вхождению
 - проработать SelectFields
+- в render_product сделать поиск по всей базе
+- сделать стоп-лист для прочих складов Север авто
 
 
 # done:
-- added search forms and relevant views
+- made search results groupped by article
+- added product page
+- added filter collapse and search cards
 -----------------------------------------------------------------
+- added search forms and relevant views
 - fixed selling price
 - restricted to adding categories until the development of relevant models
 - rewrited svrauto download to a separate thread

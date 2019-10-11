@@ -8,9 +8,19 @@
 
 {% block filter %}
 
-<div class="container">
+<div class="accordion" id="accordionExample">
+  <div class="card text-white bg-secondary">
+    <div class="card-header" id="headingOne">
+      <h2 class="mb-0">
+        <button class="btn btn-light btn-sm" type="button" data-toggle="collapse" data-target="#collapseOne" aria-expanded="true" aria-controls="collapseOne">
+          Фильтр
+        </button>
+      </h2>
+    </div>
 
-        <form action="{{ url_for('search')}}" method="post" enctype="multipart/form-data" class="mt-5">
+    <div id="collapseOne" class="collapse show" aria-labelledby="headingOne" data-parent="#accordionExample">
+      <div class="card-body">
+        <form action="{{ url_for('search')}}" method="post" enctype="multipart/form-data">
             <div class="form-row">
                 {% for field in form %}
                     <div class="form-group m-1">
@@ -19,35 +29,56 @@
                     </div>
                 {% endfor %}
             </div>
-            <button type="submit" class="btn btn-success btn-lg btn-block m-2">Найти</button>
+            <button type="submit" class="btn btn-warning mt-2">Найти</button>
         </form>
-
+      </div>
+    </div>
+  </div>
 </div>
 
 {% endblock %}
 
 {% block products %}
     <small>
-    {% for product in products %}
+    {% for list_ in products %}
 
-        <div class="row bg-dark text-white">{{ product.title }} [{{ product.article }}] ЗЦ - {{ product.purchase_price }}, РРЦ - {{ product.retail_price }}, МЦ - {{ product.selling_price }}, ЦСД - {{ product.low_price }}</div><br>
-            <div class="container-fluid">
-
-                <div class="row">
-                    {% for key in product.__dict__ %}
-                        {% if key != 'updated' and key != 'id' and key != '_sa_instance_state' and key != 'category' and key != 'purchase_price' and key != 'retail_price' and key != 'selling_price' and key != 'low_price'%}
-                    <div class="col">
-                        <div class="row">{{ key }}</div>
-                        <div class="row">{{ product.__dict__[key] }}</div>
+        <div class="card text-white bg-dark mt-3">
+            <div class="card-header">
+                <h6 class="card-title mb-0"><a href="{{ url_for('render_product', slug=list_[0].id ) }}">
+                    {{ list_[0].title }}</a> <span class="text-primary">[{{ list_[0].article or 'нет артикула' }}]</span></h6></div>
+          <div class="card-body">
+              <div class="d-flex flex-row">
+                {% for product in list_ %}
+                <div class="col">
+                    <div class="row justify-content-start">
+                        <div class="col"><b>Поставщик:</b></div><div class="col">{{ product.supplier }}</div>
                     </div>
-                        {% endif %}
-                    {% endfor  %}
+                    <div class="row">
+                        <div class="col">{{ product.address }}:</div><div class="col">{{ product.count }} шт.</div>
+                    </div>
+                    {% if not secret %}
+                    <div class="row">
+                        <div class="col">Закупка:</div><div class="col">{{ product.purchase_price }} руб</div>
+                    </div>
+                    {% endif %}
+                    <div class="row">
+                        <div class="col">Моя цена:</div><div class="col">{{ product.low_price }}</div>
+                    </div>
+                    <div class="row">
+                        <div class="col">Рекомендуемая цена:</div><div class="col">{{ product.retail_price }} руб</div>
+                    </div>
+                    <div class="row">
+                        <div class="col">Цена продажи:</div><div class="col">{{ product.selling_price }} руб</div>
+                    </div>
+                    <div class="row">
+                        <div class="col">Цена drom.ru:</div><div class="col">{{ product.selling_price }} руб</div>
+                    </div>
                 </div>
-
-            </div>
-        <hr>
+                {% endfor  %}
+              </div>
+          </div>
+        </div>
 
     {% endfor  %}
     </small>
-
 {% endblock %}
