@@ -7,66 +7,75 @@
 {% endblock %}
 
 {% block products %}
-    <div class="row mx-3 mt-1 d-flex justify-content-between">
-        <h3 class="card-title">{{ product.title }}</h3>
-        <p class="card-text"><small>Обновлено {{ product.updated.strftime('%d.%m.%Y %H:%M') }}</small></p>
+<div class="row mx-3 mt-1 d-flex justify-content-between">
+    <h3 class="card-title">{{ product.title }}</h3>
+    <p class="card-text"><small>Обновлено {{ product.updated.strftime('%d.%m.%Y %H:%M') }}</small></p>
+</div>
+<div class="card mt-0 bg-secondary text-light border-0">
+  <div class="row no-gutters">
+    <div class="col-md-4">
+      <img src="{{ product.img }}" class="card-img" alt="{{ product.title }}">
     </div>
-    <div class="card mt-0 bg-secondary text-light border-0">
-      <div class="row no-gutters">
-        <div class="col-md-4">
-          <img src="{{ product.img }}" class="card-img" alt="{{ product.title }}">
-        </div>
-        <div class="col-md-8">
-          <div class="card-body mb-0 pt-0">
-              <div class="row">
-                  <div class="col">
-                      <p class="card-text"><b>Характеристики:</b></p>
-                    {% for param in product.__dict__ if product.__dict__[param] not in main_params %}
-                        <div class="row">
-                        {% if product.__dict__[param] != None %}
-                            <div class="col">{{ titles.get(param).get('rus') }}: </div>
-                            <div class="col">{{ product.__dict__[param] if product.__dict__[param] != False else 'нет' }}</div>
-                        {% else  %}
-                            <div class="col">{{ titles.get(param).get('rus') }}: </div>
-                            <div class="col">нет</div>
-                        {% endif %}
+    <div class="col-md-8">
+      <div class="card-body mb-0 pt-0">
+          <div class="row">
+              <div class="col">
+                  <p class="card-text"><b>Характеристики:</b></p>
+                    <div class="d-flex flex-row">
+                        <div class="mr-3">
+                        {% for param in product.__dict__ if product.__dict__[param] not in main_params %}
+                            {% if product.__dict__[param] != None %}
+                                {{ titles.get(param).get('rus') }}: <br>
+                            {% else  %}
+                                {{ titles.get(param).get('rus') }}: <br>
+                            {% endif %}
+                        {% endfor %}
                         </div>
-                    {% endfor %}
-                  </div>
-                  <div class="col">
-                    <p class="card-text"><b>Наличие и цены:</b></p>
-                    <div class=""><small>
-
-                        <div class=" border border-1 border-white rounded p-3 m-1">
-                            <div class="row">
-                                <div class="col">Поставщик: </div><div class="col">{{ product.supplier }}</div>
-                            </div>
-                            <div class="row">
-                                <div class="col">Склад: </div><div class="col">{{ product.address }}</div>
-                            </div>
-                            <div class="row">
-                                <div class="col">Наличие: </div><div class="col">{{ product.count }} шт</div>
-                            </div>
-                            <div class="row">
-                                <div class="col">Цена закупки: </div><div class="col">{{ product.purchase_price }} руб</div>
-                            </div>
-                            <div class="row">
-                                <div class="col">Рекомендуемая цена: </div><div class="col">{{ product.retail_price }} руб</div>
-                            </div>
-                            <div class="row">
-                                <div class="col">Цена продажи: </div><div class="col">{{ product.selling_price }} руб</div>
-                            </div>
-                            <div class="row">
-                                <div class="col">Цена "для своих": </div><div class="col">{{ product.low_price }} руб</div>
-                            </div>
+                        <div class="">
+                        {% for param in product.__dict__ if product.__dict__[param] not in main_params %}
+                            {% if product.__dict__[param] != None %}
+                                {{ product.__dict__[param] if product.__dict__[param] != False else 'нет' }}<br>
+                            {% else  %}
+                                нет<br>
+                            {% endif %}
+                        {% endfor %}
                         </div>
-
-                        </small>
                     </div>
-                  </div>
               </div>
           </div>
-        </div>
       </div>
     </div>
+  </div>
+    <p class="card-text"><b>Наличие и цены:</b></p>
+    <div class="d-flex flex-row">
+        <div class="d-flex flex-row">
+          <small>
+          <!-- suppliers cards -->
+              <div class="d-flex mb-5">
+                  <div class="mr-1  pr-2 border-1 border-right border-light">
+                      <b>Поставщик:</b><br>
+                      Склад:<br>
+                      {% if not secret %}Закупка:<br>{% endif %}
+                      Моя цена:<br>
+                      Рекомендуемая цена:<br>
+                      Цена продажи:<br>
+                      Цена на drom.ru:<br>
+                    </div>
+                  {% for offer in offers %}
+                    <div class="ml-1 mr-2 pr-2 border-1 border-right border-light">
+                      <b>{{ offer.supplier }}</b><br>
+                      {{ offer.address }} (<b>{{ offer.count }} шт.</b>)<br>
+                      {% if not secret %}{{ offer.purchase_price }} руб<br>{% endif %}
+                      {{ offer.low_price }} руб<br>
+                      {{ offer.retail_price }} руб<br>
+                      {{ offer.selling_price }} руб<br>
+                      {{ offer.selling_price }} руб<br>
+                    </div>
+                  {% endfor %}
+                </div>
+          <!-- end of suppliers cards -->
+          </small>
+        </div>
+    </div>
+</div>
 {% endblock %}

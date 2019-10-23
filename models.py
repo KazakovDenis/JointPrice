@@ -189,13 +189,12 @@ class Product(db.Model):
     supplier = db.Column(db.String(40))
     address = db.Column(db.String(40))
     count = db.Column(db.Integer)
-    purchase_price = db.Column(db.Float)   # цена закупки
+    purchase_price = db.Column(db.Float)     # цена закупки
     retail_price = db.Column(db.Integer)     # рекомендуема розничная цена
     selling_price = db.Column(db.Integer)    # моя цена продажи
     low_price = db.Column(db.Integer)        # цена "для своих"
     description = db.Column(db.Text)
     updated = db.Column(db.DateTime, default=datetime.now())
-    # category = db.Column(db.ForeignKey('category.title'))
 
     def __repr__(self):
         return f'{self.id}. Art № {self.article} - {self.title}'
@@ -222,25 +221,26 @@ class CarTire(Product):
         self.powerload = True if kwargs.get('powerload') else False
         self.selling_price = int((kwargs.get('purchase_price') or 0) * 1.2)
 
-# class CarRim(Product):
-#     pass
-#
-#
-# class TruckTire(Product):
-#     pass
-#
-#
-# class TruckRim(Product):
-#     pass
-#
-#
-# class Battery(Product):
-#     pass
+
+class CarRim(Product):
+    def __init__(self, *args, **kwargs):
+        super(Product, self).__init__(*args, **kwargs)
+        self.category = 'Диски легковые'
 
 
-# class Category(db.Model):
-#     id = db.Column(db.Integer, primary_key=True)
-#     title = db.Column(db.String(50))
-#
-#     def __repr__(self):
-#         return f'{self.id}. {self.title}'
+class TruckTire(Product):
+    def __init__(self, *args, **kwargs):
+        super(Product, self).__init__(*args, **kwargs)
+        self.category = 'Шины грузовые'
+
+
+class TruckRim(Product):
+    def __init__(self, *args, **kwargs):
+        super(Product, self).__init__(*args, **kwargs)
+        self.category = 'Диски грузовые'
+
+
+class Battery(Product):
+    def __init__(self, *args, **kwargs):
+        super(Product, self).__init__(*args, **kwargs)
+        self.category = 'Аккумуляторы'

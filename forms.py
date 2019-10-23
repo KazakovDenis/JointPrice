@@ -14,8 +14,9 @@ class ProductForm(Form):
     article = StringField('Артикул')
     _supplier_choices = [(None, 'Все')] + [(supplier['title'], supplier['title']) for supplier in suppliers]
     supplier = SelectField('Поставщик', choices=_supplier_choices)
-    secret = BooleanField(label=' ')
+    secret = BooleanField('@', false_values=('false', 'None', None, False))
     count = StringField('Количество')
+    price = StringField('Макс цена')
 
 
 class CarTireSearch(ProductForm):

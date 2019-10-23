@@ -2,17 +2,17 @@
 - отсечь из pwrs.car_tires не шины
 - tree неправильно определяется в pwrs
 - добавить логгирование
-- сделать поиск по базе не по точному соответствию, а по вхождению
 - проработать SelectFields
-- в render_product сделать поиск по всей базе
 - сделать стоп-лист для прочих складов Север авто
 
 
 # done:
-- made search results groupped by article
+- в render_product сделал поиск по всей базе
+- сделал работу фильтров, но всё очень медленно
+-----------------------------------------------------------------
+- search results groupped by article
 - added product page
 - added filter collapse and search cards
------------------------------------------------------------------
 - added search forms and relevant views
 - fixed selling price
 - restricted to adding categories until the development of relevant models
