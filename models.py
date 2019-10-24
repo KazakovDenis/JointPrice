@@ -220,6 +220,26 @@ class CarTire(Product):
         self.runflat = True if kwargs.get('runflat') else False
         self.powerload = True if kwargs.get('powerload') else False
         self.selling_price = int((kwargs.get('purchase_price') or 0) * 1.2)
+        self.stud = self.get_stud(kwargs.get('stud')) if not kwargs.get('stud') else None
+        self.season = self.get_season(kwargs.get('season')) if kwargs.get('season') else None
+
+    @staticmethod
+    def get_stud(arg):
+        arg = str(arg).lower()
+        if arg == 'ш.' or arg == 'да' or arg == 'y':
+            return 'шипованная'
+        elif arg == 'н/ш.' or arg == 'n':
+            return 'нешипованная'
+
+    @staticmethod
+    def get_season(arg):
+        arg = str(arg).lower()
+        if arg == 'летняя' or arg == 'лето':
+            return 'летняя'
+        elif arg == 'зимняя' or arg == 'зима':
+            return 'зимняя'
+        elif arg == 'всесезонная' or arg == 'всесезон':
+            return 'всесезонная'
 
 
 class CarRim(Product):

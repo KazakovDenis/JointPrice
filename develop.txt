@@ -4,12 +4,14 @@
 - добавить логгирование
 - проработать SelectFields
 - сделать стоп-лист для прочих складов Север авто
+- исправить работу фильтров "Сезон" и "Шипы"
 
 
 # done:
-- в render_product сделал поиск по всей базе
-- сделал работу фильтров, но всё очень медленно
+
 -----------------------------------------------------------------
+- added search for whole db in render_product
+- fixed filters work
 - search results groupped by article
 - added product page
 - added filter collapse and search cards

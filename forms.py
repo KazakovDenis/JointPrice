@@ -25,9 +25,9 @@ class CarTireSearch(ProductForm):
     width = StringField('Ширина')
     height = StringField('Профиль')
     diameter = StringField('Диаметр')
-    season = SelectField('Сезон', choices=[(None, 'Любой'), ('Зима' or 'Зимняя' or 'зимняя', 'Зима'),
-                                           ('Лето' or 'Летняя' or 'летняя', 'Лето')])
-    stud = SelectField('Шипы', choices=[(None, 'Не важно'), ('Ш' or 'ш' or 'Ш.' or 'шип.', 'Да'), ('н/ш', 'Нет')])
+    season = SelectField('Сезон', choices=[(None, 'Любой'), ('зимняя', 'Зимняя'), ('летняя', 'Летняя'),
+                                           ('всесезонная', 'Всесезонная')])
+    stud = SelectField('Шипы', choices=[(None, 'Не важно'), ('шипованная', 'Есть'), ('нешипованная', 'Нет')])
 
 
 class CarRimSearch(ProductForm):
