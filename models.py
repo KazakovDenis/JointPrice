@@ -8,7 +8,7 @@ from itertools import repeat
 from random import uniform
 from time import sleep
 from jointprices import db
-from config import svrauto, pwrs, trektyre, all_product_parameters
+from config import svrauto, pwrs, trektyre, all_product_parameters, applied_sa_addresses
 
 
 def get_response(url):
@@ -55,25 +55,29 @@ class PriceList:
         if os.path.exists(f'prices/{self.file_name}'):
             with open(f'prices/{self.file_name}', 'r', encoding='utf-8', errors='ignore') as cached:
                 xml_object = cached.read()
-            tree = ET.fromstring(xml_object)[0]
+            tree = ET.fromstring(xml_object)[0] if self.supplier == 'svrauto' else ET.fromstring(xml_object)
             return tree
         print('No cached file. Download the price list at first: .download()')
 
     def get_nesting_level(self):
         """ Looks for nesting level of product info in XML tree. Returns a level and a root """
         if os.path.exists(f'prices/{self.file_name}'):
+
             def _iter_nesting_level(items, level=0):
-                if items[0]:
-                    level += 1
-                    level = _iter_nesting_level(items[0], level=level)
+                for item in items:
+                    if len(item) > 0:
+                        level += 1
+                        level = _iter_nesting_level(item, level=level)
+                        break
                 return level
+
             tree = ET.parse(f'prices/{self.file_name}')
             root = tree.getroot()
             nesting_level = _iter_nesting_level(root)
             return nesting_level, root
         return 'Nesting level is impossible to measure'
 
-    def get_product_elements(self):
+    def get_products_parent_tag(self):
         """ Returns a list of XML-elements contains products """
         def recursive_search(level: int, element: list):
             for items in root:
@@ -83,77 +87,29 @@ class PriceList:
                 return items
 
         level, root = self.get_nesting_level()
-        return recursive_search(level, root)
-
-    # methods to consider the need
-    @staticmethod
-    def _get_product_by(params):
-        """ Secondary function for get_product_objs filter() """
-        items, tag, value = params
-        if type(value) == int and 'PRICE' in tag:
-            for item in items:
-                if item.tag == tag and int(item.text or 0) <= value:
-                    return True
-        elif type(value) == int and 'REST' in tag:
-            for item in items:
-                if item.tag == tag and int(item.text or 0) >= value:
-                    return True
-        elif type(value) == int and 'PRICE' not in tag and 'REST' not in tag:
-            for item in items:
-                if item.tag == tag and int(item.text or 0) == value:
-                    return True
+        if 0 <= level <= 1:
+            return root
         else:
-            for item in items:
-                if item.tag == tag and item.text == value:
-                    return True
-
-    def get_product_objs(self, products=None, **filters):
-        """ Returns list of products filtered by parameters in kwargs """
-        if not products:
-            products = self.tree[1:]
-
-        key = list(filters.keys())[0]
-        filtered = list(filter(self._get_product_by, zip(products, repeat(key), repeat(filters[key]))))
-        result = [i[0] for i in filtered]
-
-        del filters[key]
-        if len(filters) > 0:
-            result = self.get_product_objs(products=result, **filters)
-
-        return result
-
-    def show_products_as_dicts(self, **filters):
-        """
-        Returns found products from the XML tree in a format ready to display.
-        Example filter: filters_ = {'NPRICE_RRP': 10600, 'SMARKA': 'SATOYA', 'NREST': 20}
-         """
-        filtered_products = self.get_product_objs(**filters)
-        found = {}
-        for product in filtered_products:
-            found[product] = {}
-            for attribute in product:
-                found[product][attribute.tag] = attribute.text
-        return found
-
-    def print_products(self, **filters):
-        found = self.show_products_as_dicts(**filters)
-        for key, value in found.items():
-            print(key, ':')
-            for key1, value1 in value.items():
-                print('\t', key1, ' - ', value1)
+            elements = recursive_search(level, root)
+            return elements
 
 
 class PriceHandler:
     """ It extracts products from Price """
+    product_tags_stop_list = ('DESCRIPTION', 'company', 'name', 'version', 'info')
+
     def __init__(self, price_obj):
+        self.price = price_obj
         self.supplier = price_obj.supplier
-        self.product_elements = price_obj.get_product_elements()
+        self.product_elements = price_obj.get_products_parent_tag()
         self.product_generator = self.generate_product()
 
     def generate_product(self):
         for product_element in self.product_elements:
-            if product_element.tag == 'DESCRIPTION':
+            if product_element.tag in PriceHandler.product_tags_stop_list:
                 continue
+            if self.supplier == 'pwrs' and 'car_tires' in self.price.file_name and product_element.tag != 'tires':
+                return None
             yield product_element
 
     def extract_product_parameters(self):

@@ -70,3 +70,4 @@ all_product_parameters = {
 }
 
 suppliers = [svrauto, pwrs, trektyre]
+applied_sa_addresses = ('Твардовского/3', 'Шамшиных', 'Фабричная93', 'Кирова232', 'Ипподромск')

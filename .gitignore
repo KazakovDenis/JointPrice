@@ -3,7 +3,7 @@ config.py
 prices
 data
 venv
-test.py
+zzz.py
 develop.txt
 static/img
 migrations

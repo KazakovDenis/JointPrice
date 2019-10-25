@@ -1,15 +1,16 @@
 # todo:
 - отсечь из pwrs.car_tires не шины
-- tree неправильно определяется в pwrs
 - добавить логгирование
-- проработать SelectFields
-- сделать стоп-лист для прочих складов Север авто
-- исправить работу фильтров "Сезон" и "Шипы"
+- сделать стоп-лист для прочих складов Север авто (пока не решил)
+- исправить get_nesting_level для Север авто
 
 
 # done:
-
+- cut off unnecessary when extracting from pwrs car tires
+- added tests
+- fixed get_tree for pwrs
 -----------------------------------------------------------------
+- fixed CarTire params extractor & SelectFields
 - added search for whole db in render_product
 - fixed filters work
 - search results groupped by article
