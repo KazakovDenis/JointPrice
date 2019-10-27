@@ -2,15 +2,15 @@
 # https://github.com/KazakovDenis
 import os
 from threading import Thread
-from jointprices import manager, db
+from jointprices import app, manager, db
 from config import suppliers
 from models import *
-from run import *
 """ Module contains functions to manage the project """
 
 
 def download_prices_of(supplier):
     print('Starting to download prices of', supplier['title'])
+
     def _download(price_list):
         print(f"Starting to download '{price_list}' of {supplier['title']}")
         price_obj = PriceList(supplier, price_list)
@@ -89,12 +89,12 @@ def delete_from_db(obj, confirm='n'):
         print(f'Record "{obj}" has been deleted from DB!')
 
 
+# todo: убрать if
 def update_db_category(supplier, price):
     if 'car_tires' in price:
         price_obj = PriceList(supplier, price)
-        handler = PriceHandler(price_obj)
         while True:
-            product_params = handler.extract_product_parameters()
+            product_params = price_obj.extract_product_parameters()
             if product_params:
                 obj = CarTire(**product_params)
                 add_to_db(obj)

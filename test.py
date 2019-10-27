@@ -1,6 +1,6 @@
 # python -m unittest -v test.py
 import unittest
-from models import PriceList, PriceHandler
+from models import PriceList
 from config import *
 
 
@@ -8,17 +8,13 @@ s = PriceList(svrauto, 'car_tires')
 p = PriceList(pwrs, 'car_tires')
 t = PriceList(trektyre, 'car_tires_for_order')
 
-sh = PriceHandler(s)
-ph = PriceHandler(p)
-th = PriceHandler(t)
-
-sg = sh.generate_product()
-pg = ph.generate_product()
-tg = th.generate_product()
+sg = s.generate_product()
+pg = p.generate_product()
+tg = t.generate_product()
 
 
 class PriceTest(unittest.TestCase):
-    """Calc tests"""
+    """Price tests"""
 
     @classmethod
     def setUpClass(cls):

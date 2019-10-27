@@ -40,34 +40,68 @@ trektyre = {
     'truck_tires_for_order': 'https://trektyre.ru/load-price-xml?url=2'
 }
 
-# all_product_parameters[parameter][supplier] = supplier's tag title in XML
-all_product_parameters = {
-    'article': {'rus': 'Артикул', 'svrauto': 'SMNFCODE', 'pwrs': 'cae', 'trektyre': 'tag'},
-    'title': {'rus': 'Название', 'svrauto': 'SMODIFNAME', 'pwrs': 'name', 'trektyre': 'tag'},
-    'brand': {'rus': 'Марка', 'svrauto': 'SMARKA', 'pwrs': 'brand', 'trektyre': 'tag'},
-    'model': {'rus': 'Модель', 'svrauto': 'SMODEL', 'pwrs': 'model', 'trektyre': 'tag'},
-    'img': {'rus': 'Изображение', 'svrauto': 'SPICTURE', 'pwrs': 'img_big_my', 'trektyre': 'tag'},
-    'supplier': {'rus': 'Поставщик', 'svrauto': 'svrauto', 'pwrs': 'pwrs', 'trektyre': 'trektyre'},
-    'address': {'rus': 'Склад', 'svrauto': 'TERRITORY_NAME', 'pwrs': 'tag', 'trektyre': 'Екатеринбург'},
-    'count': {'rus': 'Количество', 'svrauto': 'NREST', 'pwrs': 'rest_novosib', 'trektyre': 'tag', 'pwrs_for_order': 'rest'},
-    'purchase_price': {'rus': 'Цена закупки', 'svrauto': 'NPRICE_PREPAYMENT', 'pwrs': 'price_novosib', 'trektyre': 'tag'},
-    'retail_price': {'rus': 'Рекомендуемая цена', 'svrauto': 'NPRICE_RRP', 'pwrs': 'price_novosib_rozn', 'trektyre': 'tag'},
-    'selling_price': {'rus': 'Цена продажи', 'svrauto': 0, 'pwrs': 0, 'trektyre': 0},
-    'low_price': {'rus': 'Цена для своих', 'svrauto': 0, 'pwrs': 0, 'trektyre': 0},
-    'description': {'rus': 'Описание', 'svrauto': 'tag', 'pwrs': 'tag', 'trektyre': 'tag'},
-    'width': {'rus': 'Ширина', 'svrauto': 'SWIDTH', 'pwrs': 'width', 'trektyre': 'tag'},
-    'height': {'rus': 'Высота профиля', 'svrauto': 'SHEIGHT', 'pwrs': 'height', 'trektyre': 'tag'},
-    'diameter': {'rus': 'Диаметр', 'svrauto': 'SDIAMETR', 'pwrs': 'diameter', 'trektyre': 'tag'},
-    'season': {'rus': 'Сезон', 'svrauto': 'SSEASON', 'pwrs': 'season', 'trektyre': 'tag'},
-    'stud': {'rus': 'Шипы', 'svrauto': 'STHORNING', 'pwrs': 'thorn', 'trektyre': 'tag'},
-    'speed_index': {'rus': 'Индекс скорости', 'svrauto': 'SSPEED', 'pwrs': 'speed_index', 'trektyre': 'tag'},
-    'load_index': {'rus': 'Индекс нагрузки', 'svrauto': 'SLOAD', 'pwrs': 'load_index', 'trektyre': 'tag'},
-    'runflat': {'rus': 'Технология Run Flat', 'svrauto': 'RUNFLAT', 'pwrs': 'runflat', 'trektyre': 'tag'},
-    'powerload': {'rus': 'Усиление', 'svrauto': 'POWERLOAD', 'pwrs': 'tonnage', 'trektyre': 'tag'},
-    'purpose': {'rus': 'Назначение', 'svrauto': 'PURPOSE', 'pwrs': 'tag', 'trektyre': 'tag'},
-    'omologation': {'rus': 'Омологация', 'svrauto': 'HOMOLOGATION', 'pwrs': 'omolog', 'trektyre': 'tag'},
-    'cartype': {'rus': 'Тип автомобиля', 'svrauto': 'CARTYPE', 'pwrs': 'tiretype', 'trektyre': 'tag'},
+sak = {
+    'title': 'sak',
+    'batteries': ''
 }
 
-suppliers = [svrauto, pwrs, trektyre]
+# all_product_parameters[parameter][supplier] = supplier's tag title in XML
+all_product_parameters = {
+    'article': {'rus': 'Артикул', 'svrauto': 'SMNFCODE', 'pwrs': 'cae', 'trektyre': 'atricle'},
+    'title': {'rus': 'Название', 'svrauto': 'SMODIFNAME', 'pwrs': 'name', 'trektyre': 'name'},
+    'brand': {'rus': 'Марка', 'svrauto': 'SMARKA', 'pwrs': 'brand', 'trektyre': 'producer'},
+    'brand_latin': {'rus': 'Марка', 'svrauto': 'SMARKORIG'},
+    'model': {'rus': 'Модель', 'svrauto': 'SMODEL', 'pwrs': 'model', 'trektyre': 'model'},
+    'img': {'rus': 'Изображение', 'svrauto': 'SPICTURE', 'pwrs': 'img_big_my', 'trektyre': 'img'},
+    'address': {'rus': 'Склад', 'svrauto': 'TERRITORY_NAME'},
+    'count': {'rus': 'Количество', 'svrauto': 'NREST', 'pwrs': 'rest_novosib', 'trektyre': 'StockEkb', 'pwrs_for_order': 'rest'},
+    'purchase_price': {'rus': 'Цена закупки', 'svrauto': 'NPRICE_PREPAYMENT', 'pwrs': 'price_novosib', 'trektyre': 'price'},
+    'retail_price': {'rus': 'Рекомендуемая цена', 'svrauto': 'NPRICE_RRP', 'pwrs': 'price_novosib_rozn', 'trektyre': 'rs'},
+    'selling_price': {'rus': 'Цена продажи'},
+    'low_price': {'rus': 'Цена для своих'},
+    'description': {'rus': 'Описание', 'sak': None},
+    'origin': {'rus': 'Описание', 'svrauto': 'SGOODLAND', 'sak': None},
+    'manufacturer': {'rus': 'Описание', 'sak': None},
+    'weight': {'rus': 'Масса', 'sak': None},
+    # car tires
+    'width': {'rus': 'Ширина', 'svrauto': 'SWIDTH', 'pwrs': 'width', 'trektyre': 'width'},
+    'height': {'rus': 'Высота профиля', 'svrauto': 'SHEIGHT', 'pwrs': 'height', 'trektyre': 'h'},
+    'diameter': {'rus': 'Диаметр', 'svrauto': 'SDIAMETR', 'pwrs': 'diameter', 'trektyre': 'radius'},
+    'season': {'rus': 'Сезон', 'svrauto': 'SSEASON', 'pwrs': 'season', 'trektyre': 'season'},
+    'stud': {'rus': 'Шипы', 'svrauto': 'STHORNING', 'pwrs': 'thorn', 'trektyre': 'stud'},
+    'speed_index': {'rus': 'Индекс скорости', 'svrauto': 'SSPEED', 'pwrs': 'speed_index', 'trektyre': 'ss'},
+    'load_index': {'rus': 'Индекс нагрузки', 'svrauto': 'SLOAD', 'pwrs': 'load_index', 'trektyre': 'li'},
+    'runflat': {'rus': 'Технология Run Flat', 'svrauto': 'RUNFLAT', 'pwrs': 'runflat', 'trektyre': None},
+    'powerload': {'rus': 'Усиление', 'svrauto': 'POWERLOAD', 'pwrs': 'reinforced', 'trektyre': None},
+    'purpose': {'rus': 'Назначение', 'svrauto': 'PURPOSE', 'pwrs': None, 'trektyre': None},
+    'omologation': {'rus': 'Омологация', 'svrauto': 'HOMOLOGATION', 'pwrs': 'omolog', 'trektyre': None},
+    'cartype': {'rus': 'Тип автомобиля', 'svrauto': 'CARTYPE', 'pwrs': 'tiretype', 'trektyre': 'type'},
+    # truck tires
+    'truck_width': {'rus': 'Ширина', 'svrauto': 'STIREWIDTH', 'pwrs': 'tag', 'trektyre': 'tag'},
+    'truck_height': {'rus': 'Высота профиля', 'svrauto': 'STIRERATIO', 'pwrs': 'tag', 'trektyre': 'tag'},
+    'truck_diameter': {'rus': 'Диаметр', 'svrauto': 'STIREDIAM', 'pwrs': 'tag', 'trektyre': 'tag'},
+    'axis': {'rus': 'Ось', 'svrauto': 'STIREAXLE', 'pwrs': 'tag', 'trektyre': 'tag'},
+    'tube': {'rus': 'Камерность', 'svrauto': 'STIRETUBE', 'pwrs': 'tag', 'trektyre': 'tag'},
+    'layer': {'rus': 'Слойность', 'svrauto': 'SLAYER', 'pwrs': 'tag', 'trektyre': 'tag'},
+    'type': {'rus': 'Тип', 'svrauto': 'SUSETYPE', 'pwrs': 'tag', 'trektyre': 'tag'},
+    'restored': {'rus': 'Восстановленность', 'svrauto': 'SRETREAD', 'pwrs': 'tag', 'trektyre': 'tag'},
+    # car & truck rims
+    'holes': {'rus': 'Количество отверстий', 'svrauto': 'SHOLESQUANT', 'pwrs': 'bolts_count', 'trektyre': 'tag'},
+    'PCD': {'rus': 'PCD', 'svrauto': 'SPCD', 'pwrs': 'bolts_spacing', 'trektyre': 'tag'},
+    'offset': {'rus': 'Вылет', 'svrauto': 'SWHEELOFFSET', 'pwrs': 'et', 'trektyre': 'tag'},
+    'dia': {'rus': 'Вылет', 'svrauto': 'SDIA', 'pwrs': 'tag', 'trektyre': 'tag'},
+    'color': {'rus': 'Цвет', 'svrauto': 'SCOLOR', 'pwrs': 'color', 'trektyre': 'tag'},
+    'rim_type': {'rus': 'Цвет', 'svrauto': 'STYPE', 'pwrs': 'rim_type', 'trektyre': 'tag'},
+    'treatment': {'rus': 'Цвет', 'svrauto': 'SPROCESSWAY', 'pwrs': 'rim_type', 'trektyre': 'tag'},
+    'for_car': {'rus': 'Цвет', 'svrauto': 'SAUTOLIST', 'pwrs': 'rim_type', 'trektyre': 'tag'},
+    # batteries
+    'capacity': {'rus': 'Ёмкость', 'sak': 'None'},
+    'polarity': {'rus': 'Полярность', 'sak': 'None'},
+    'current': {'rus': 'Пусковой ток', 'sak': 'None'},
+    'voltage': {'rus': 'Номинальное напряжение', 'sak': 'None'},
+    'dimensions': {'rus': 'Габариты', 'sak': 'None'},
+    'cleats': {'rus': 'Тип клемм', 'sak': 'None'},
+}
+
+suppliers = [svrauto, pwrs, trektyre, sak]
 applied_sa_addresses = ('Твардовского/3', 'Шамшиных', 'Фабричная93', 'Кирова232', 'Ипподромск')

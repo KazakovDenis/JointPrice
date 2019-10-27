@@ -1,15 +1,20 @@
 # todo:
-- отсечь из pwrs.car_tires не шины
+- написать тесты: создание экземпляров классов моделей
+- у pwrs выгружаются лишние товары прайсах
+- проработать оставшиеся модели
+- проработать manage.update_db_category
 - добавить логгирование
 - сделать стоп-лист для прочих складов Север авто (пока не решил)
-- исправить get_nesting_level для Север авто
 
 
 # done:
+- worked on remaining models
+- reformatted db structure
+- excluded class PriceHandler
+-----------------------------------------------------------------
 - cut off unnecessary when extracting from pwrs car tires
 - added tests
 - fixed get_tree for pwrs
------------------------------------------------------------------
 - fixed CarTire params extractor & SelectFields
 - added search for whole db in render_product
 - fixed filters work

@@ -1,10 +1,12 @@
 # -*- coding: utf-8 -*-
 # https://github.com/KazakovDenis
 from collections import Counter
+from threading import Thread
 from flask import render_template, request
 from jointprices import app
 from models import CarTire, CarRim, TruckRim, TruckTire, Battery
 from config import all_product_parameters as aprp
+from manage import update_db_entirely
 from forms import *
 
 
@@ -14,11 +16,11 @@ def index():
 
 
 category_form = {
-    'car-tires': (CarTire, CarTireSearch, 'Шины легковые'),
-    'car-rims': (CarRim, CarRimSearch, 'Диски легковые'),
-    'truck-tires': (TruckTire, TruckTireSearch, 'Шины грузовые'),
-    'truck-rims': (TruckRim, TruckRimSearch, 'Диски грузовые'),
-    'batteries': (Battery, BatterySearch, 'Аккумуляторы')
+    'car-tires': (CarTire, CarTireSearch),
+    'car-rims': (CarRim, CarRimSearch),
+    'truck-tires': (TruckTire, TruckTireSearch),
+    'truck-rims': (TruckRim, TruckRimSearch),
+    'batteries': (Battery, BatterySearch)
 }
 
 
@@ -27,7 +29,6 @@ def search(category):
     try:
         model = category_form[category][0]
         form = category_form[category][1]()
-        cyrillic = category_form[category][2]
     except KeyError:
         return render_template('404.html'), 404
 
@@ -59,9 +60,8 @@ def search(category):
 
             # grouping products by article
             articles = set([product.__dict__.get('article') for product in found])
-            filtered = [item for item in
-                        [list(filter(lambda x: x.article == article and x.category == cyrillic, found))
-                         for article in articles] if item]
+            filtered = [item for item in [list(filter(lambda x: x.article == article, found)) for article in articles]
+                        if item]
         else:
             filtered = None
         secret = request.form.get('secret')    # for hiding the purchase price from prying eyes
@@ -84,3 +84,8 @@ def render_product(category=None, db_id=None):
 @app.errorhandler(404)
 def page_not_found(event):
     return render_template('404.html'), 404
+
+
+@app.route('/update')
+def update():
+    Thread(target=update_db_entirely()).start()

@@ -4,19 +4,18 @@ import xml.etree.ElementTree as ET
 import requests
 import os.path
 from datetime import datetime
-from itertools import repeat
 from random import uniform
 from time import sleep
 from jointprices import db
-from config import svrauto, pwrs, trektyre, all_product_parameters, applied_sa_addresses
+from config import *
 
 
 def get_response(url):
     """ Returns response. Looking for <Response [200]> """
     print(f'\nConnecting to {url}')
     try:
-        useragent = {'User-Agent': 'Mozilla/5.0 (Windows NT 6.1; WOW64; rv:23.0) Gecko/20100101 Firefox/23.0'}
-        response = requests.get(url, headers=useragent, timeout=90)
+        user_agent = {'User-Agent': 'Mozilla/5.0 (Windows NT 6.1; WOW64; rv:23.0) Gecko/20100101 Firefox/23.0'}
+        response = requests.get(url, headers=user_agent, timeout=90)
         pause = uniform(2, 9)
         sleep(pause)
         return response
@@ -32,12 +31,15 @@ def get_response(url):
 
 class PriceList:
     count = 0
+    product_tags_stop_list = ('DESCRIPTION', 'company', 'name', 'version', 'info')
 
     def __init__(self, price_dict, products):
         self.url = price_dict[products]
         self.supplier = price_dict['title']
         self.file_name = price_dict['title'] + '_' + products + '.xml'
         self.tree = self.get_tree()
+        self.product_elements = self.get_products_parent_tag()
+        self.product_generator = self.generate_product()
         PriceList.count += 1
 
     def download(self):
@@ -93,22 +95,11 @@ class PriceList:
             elements = recursive_search(level, root)
             return elements
 
-
-class PriceHandler:
-    """ It extracts products from Price """
-    product_tags_stop_list = ('DESCRIPTION', 'company', 'name', 'version', 'info')
-
-    def __init__(self, price_obj):
-        self.price = price_obj
-        self.supplier = price_obj.supplier
-        self.product_elements = price_obj.get_products_parent_tag()
-        self.product_generator = self.generate_product()
-
     def generate_product(self):
         for product_element in self.product_elements:
-            if product_element.tag in PriceHandler.product_tags_stop_list:
+            if product_element.tag in PriceList.product_tags_stop_list:
                 continue
-            if self.supplier == 'pwrs' and 'car_tires' in self.price.file_name and product_element.tag != 'tires':
+            if self.supplier == 'pwrs' and 'car_tires' in self.file_name and product_element.tag != 'tires':
                 return None
             yield product_element
 
@@ -118,28 +109,22 @@ class PriceHandler:
             product_element = next(self.product_generator)
         except StopIteration:
             return None
-        product_parameters = dict()
+        product_parameters = dict(supplier=self.supplier)
         for parameter in all_product_parameters:
             for element in product_element:
-                if element.tag == all_product_parameters[parameter][self.supplier] and element.text:
-                    if element.text.isdigit():
-                        product_parameters[parameter] = int(element.text)
-                    else:
-                        product_parameters[parameter] = element.text
-        product_parameters['supplier'] = self.supplier
-        try:
-            product_parameters['low_price'] = int(product_parameters['purchase_price'] * 1.05)
-        except KeyError:
-            pass
+                if element.tag == all_product_parameters[parameter].get(self.supplier) and element.text:
+                    product_parameters[parameter] = int(element.text) if element.text.isdigit() else element.text
+        product_parameters['low_price'] = int((product_parameters.get('purchase_price') or 0) * 1.05)
         return product_parameters
 
 
-class Product(db.Model):
+class Product:
     id = db.Column(db.Integer, primary_key=True)
     category = db.Column(db.String(40))
     article = db.Column(db.String(40))
     title = db.Column(db.String(250))
     brand = db.Column(db.String(40))
+    brand_latin = db.Column(db.String(40))
     model = db.Column(db.String(40))
     img = db.Column(db.String(200))
     supplier = db.Column(db.String(40))
@@ -149,6 +134,9 @@ class Product(db.Model):
     retail_price = db.Column(db.Integer)     # рекомендуема розничная цена
     selling_price = db.Column(db.Integer)    # моя цена продажи
     low_price = db.Column(db.Integer)        # цена "для своих"
+    weight = db.Column(db.Float)
+    origin = db.Column(db.String(40))
+    manufacturer = db.Column(db.String(40))
     description = db.Column(db.Text)
     updated = db.Column(db.DateTime, default=datetime.now())
 
@@ -156,14 +144,14 @@ class Product(db.Model):
         return f'{self.id}. Art № {self.article} - {self.title}'
 
 
-class CarTire(Product):
+class CarTire(Product, db.Model):
     width = db.Column(db.Integer)
     height = db.Column(db.Integer)
     diameter = db.Column(db.String(5))
     season = db.Column(db.String(10))
     stud = db.Column(db.String(10))
     speed_index = db.Column(db.String(3))
-    load_index = db.Column(db.Integer)
+    load_index = db.Column(db.String(10))
     runflat = db.Column(db.Boolean, default=False)
     powerload = db.Column(db.Boolean, default=False)
     purpose = db.Column(db.String(20))
@@ -171,13 +159,16 @@ class CarTire(Product):
     cartype = db.Column(db.String(30))
 
     def __init__(self, *args, **kwargs):
-        super(Product, self).__init__(*args, **kwargs)
+        super(CarTire, self).__init__(*args, **kwargs)
         self.category = 'Шины легковые'
         self.runflat = True if kwargs.get('runflat') else False
         self.powerload = True if kwargs.get('powerload') else False
         self.selling_price = int((kwargs.get('purchase_price') or 0) * 1.2)
         self.stud = self.get_stud(kwargs.get('stud')) if not kwargs.get('stud') else None
         self.season = self.get_season(kwargs.get('season')) if kwargs.get('season') else None
+
+        if kwargs.get('supplier') == 'pwrs':
+            self.title = kwargs.get('brand') + kwargs.get('title')
 
     @staticmethod
     def get_stud(arg):
@@ -198,25 +189,66 @@ class CarTire(Product):
             return 'всесезонная'
 
 
-class CarRim(Product):
+class CarRim(Product, db.Model):
+    width = db.Column(db.String(20))
+    height = db.Column(db.String(20))
+    diameter = db.Column(db.String(20))
+    holes = db.Column(db.String(20))
+    PCD = db.Column(db.String(20))
+    offset = db.Column(db.String(20))
+    dia = db.Column(db.String(20))
+    rim_type = db.Column(db.String(20))
+    color = db.Column(db.String(20))
+    treatment = db.Column(db.String(20))
+    for_car = db.Column(db.String(20))
+
     def __init__(self, *args, **kwargs):
-        super(Product, self).__init__(*args, **kwargs)
+        super(CarRim, self).__init__(*args, **kwargs)
         self.category = 'Диски легковые'
 
 
-class TruckTire(Product):
+class TruckTire(Product, db.Model):
+    truck_width = db.Column(db.Integer)
+    truck_height = db.Column(db.Integer)
+    truck_diameter = db.Column(db.String(5))
+    speed_index = db.Column(db.String(3))
+    load_index = db.Column(db.String(10))
+    axis = db.Column(db.String(40))
+    tube = db.Column(db.String(20))
+    layer = db.Column(db.String(20))
+    type = db.Column(db.String(40))
+    restored = db.Column(db.String(20))
+
     def __init__(self, *args, **kwargs):
-        super(Product, self).__init__(*args, **kwargs)
+        super(TruckTire, self).__init__(*args, **kwargs)
         self.category = 'Шины грузовые'
 
 
-class TruckRim(Product):
+class TruckRim(Product, db.Model):
+    width = db.Column(db.Float)
+    diameter = db.Column(db.Integer)
+    holes = db.Column(db.Integer)
+    PCD = db.Column(db.Float)
+    offset = db.Column(db.String(20))
+    dia = db.Column(db.Float)
+    rim_type = db.Column(db.String(20))
+    color = db.Column(db.String(20))
+    treatment = db.Column(db.String(40))
+    for_car = db.Column(db.String(40))
+
     def __init__(self, *args, **kwargs):
-        super(Product, self).__init__(*args, **kwargs)
+        super(TruckRim, self).__init__(*args, **kwargs)
         self.category = 'Диски грузовые'
 
 
-class Battery(Product):
+class Battery(Product, db.Model):
+    capacity = db.Column(db.Integer)
+    polarity = db.Column(db.String(20))
+    cleats = db.Column(db.String(20))
+    current = db.Column(db.Integer)
+    voltage = db.Column(db.Integer)
+    dimensions = db.Column(db.String(20))
+
     def __init__(self, *args, **kwargs):
-        super(Product, self).__init__(*args, **kwargs)
+        super(Battery, self).__init__(*args, **kwargs)
         self.category = 'Аккумуляторы'
