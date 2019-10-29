@@ -5,6 +5,7 @@ data
 venv
 zzz.py
 develop.txt
+about.txt
 static/img
 migrations
 

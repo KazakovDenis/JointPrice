@@ -1,16 +1,16 @@
 # python -m unittest -v test.py
 import unittest
-from models import PriceList
+from models import XMLPriceList
 from config import *
 
 
-s = PriceList(svrauto, 'car_tires')
-p = PriceList(pwrs, 'car_tires')
-t = PriceList(trektyre, 'car_tires_for_order')
+s = XMLPriceList(svrauto, 'car_tires')
+p = XMLPriceList(pwrs, 'car_tires')
+t = XMLPriceList(trektyre, 'car_tires_for_order')
 
-sg = s.generate_product()
-pg = p.generate_product()
-tg = t.generate_product()
+sg = s._generate_product()
+pg = p._generate_product()
+tg = t._generate_product()
 
 
 class PriceTest(unittest.TestCase):
@@ -20,12 +20,12 @@ class PriceTest(unittest.TestCase):
     def setUpClass(cls):
         """Set up for class"""
         print("Test has been started")
-        print("==========")
+        print("====================")
 
     @classmethod
     def tearDownClass(cls):
         """Tear down for class"""
-        print("==========")
+        print("====================")
         print("Test has been finished")
 
     def setUp(self):
@@ -37,9 +37,9 @@ class PriceTest(unittest.TestCase):
 
     def test_level(self):
         """Trying to get nesting levels"""
-        self.assertEqual(s.get_nesting_level()[0], 2)
-        self.assertEqual(p.get_nesting_level()[0], 1)
-        self.assertEqual(t.get_nesting_level()[0], 1)
+        self.assertEqual(s._get_nesting_level()[0], 2)
+        self.assertEqual(p._get_nesting_level()[0], 1)
+        self.assertEqual(t._get_nesting_level()[0], 1)
 
     def test_product_element(self):
         """Trying to get product elements"""

@@ -9,25 +9,19 @@ from models import *
 
 
 def download_prices_of(supplier):
-    print('Starting to download prices of', supplier['title'])
-
-    def _download(price_list):
-        print(f"Starting to download '{price_list}' of {supplier['title']}")
-        price_obj = PriceList(supplier, price_list)
-        price_obj.download()
-        print(f"'{price_list}' of {supplier['title']} is downloaded")
+    print('Starting to download price lists of ', supplier)
     # starting svrauto in a parallel thread
     if supplier['title'] == 'svrauto':
         def _download_svr():
             for price_ in supplier:
                 if price_ != 'title':
-                    _download(price_)
+                    PriceList(supplier, price_).download()
                     print('Now sleeping for 11 minutes because of svrauto lock')
                     sleep(60 * 11)
         Thread(target=_download_svr).start()
     else:
         # loading another supplier's prices
-        [_download(price) for price in supplier if price != 'title']
+        [PriceList(supplier, price).download() for price in supplier if price != 'title']
 
 
 def download_all_prices():
@@ -57,25 +51,22 @@ def check_relevance(obj):
 
 
 def add_to_db(obj):
-    if obj.category == 'Шины легковые':
-        """ Adds an object to database. ex: >>> p = Post(title='Some title', body='Some body'); add_to_db(p) """
-        relevant = check_relevance(obj)
-        if relevant[0] == 'Not in db':
-            db.session.add(obj)
-            db.session.commit()
-            print(f'Record "{obj}" has been added to DB!')
-        elif relevant[0] == 'Relevant':
-            print(f'Record "{obj}" is already relevant')
-        elif relevant[0] == 'Needs update':
-            record = relevant[1]
-            record.count = obj.count
-            record.purchase_price = obj.purchase_price
-            db.session.commit()
-            print(f'Record "{obj}" has been updated in DB!')
-        else:
-            print(f'WARNING! {obj} has no required parameters')
+    """ Adds an object to database. ex: >>> p = Post(title='Some title', body='Some body'); add_to_db(p) """
+    relevant = check_relevance(obj)
+    if relevant[0] == 'Not in db':
+        db.session.add(obj)
+        db.session.commit()
+        print(f'Record "{obj}" has been added to DB!')
+    elif relevant[0] == 'Relevant':
+        print(f'Record "{obj}" is already relevant')
+    elif relevant[0] == 'Needs update':
+        record = relevant[1]
+        record.count = obj.count
+        record.purchase_price = obj.purchase_price
+        db.session.commit()
+        print(f'Record "{obj}" has been updated in DB!')
     else:
-        print('Application is not ready to update this category:', obj.category)
+        print(f'WARNING! {obj} has no required parameters')
 
 
 def delete_from_db(obj, confirm='n'):
@@ -89,19 +80,16 @@ def delete_from_db(obj, confirm='n'):
         print(f'Record "{obj}" has been deleted from DB!')
 
 
-# todo: убрать if
 def update_db_category(supplier, price):
-    if 'car_tires' in price:
-        price_obj = PriceList(supplier, price)
-        while True:
-            product_params = price_obj.extract_product_parameters()
-            if product_params:
-                obj = CarTire(**product_params)
-                add_to_db(obj)
-            else:
-                break
-    else:
-        print('Application is not ready to update this category:', price)
+    """ Fills up and updates the db from chosen supplier and price list """
+    price_obj = XMLPriceList(supplier, price) if 'xml' in price else XLSPriceList(supplier, price)
+    while True:
+        product_params = price_obj.extract_next_product_parameters()
+        if product_params:
+            product = price_obj.model(**product_params)
+            add_to_db(product)
+        else:
+            break
 
 
 def update_db_by(supplier):
@@ -112,6 +100,34 @@ def update_db_by(supplier):
 def update_db_entirely():
     """ Fills up and updates the db entirely """
     [update_db_by(supplier) for supplier in suppliers]
+
+
+# delete after usage
+def sak_fill_db(sheet):
+    """ Uploads SAK goods to db from the prepared file """
+    # book = xlrd.open_workbook(os.path.join('prices', 'sak.xlsx'), encoding_override="cp1252")
+    # sheet = book.sheet_by_index(0)
+    for i in range(1, 10):     # sheet.nrows
+        params = dict(supplier='sak')
+        params['title'] = sheet.cell(i, 0).value
+        params['brand'] = sheet.cell(i, 9).value
+        params['img'] = sheet.cell(i, 4).value
+        params['address'] = 'Есенина'
+        params['count'] = sheet.cell(i, 6).value
+        # params['markup'] = sheet.cell(i, 0).value
+        params['selling_price'] = sheet.cell(i, 5).value
+        params['weight'] = sheet.cell(i, 7).value
+        params['origin'] = sheet.cell(i, 8).value
+        params['manufacturer'] = sheet.cell(i, 14).value
+        params['description'] = sheet.cell(i, 1).value
+        params['capacity'] = sheet.cell(i, 10).value
+        params['polarity'] = sheet.cell(i, 13).value
+        params['cleats'] = sheet.cell(i, 12).value
+        params['current'] = sheet.cell(i, 15).value
+        params['voltage'] = sheet.cell(i, 11).value
+        # akb = Battery(**params)
+        # add_to_db(akb)
+        yield params
 
 
 if __name__ == '__main__':
