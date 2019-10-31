@@ -54,16 +54,15 @@ class Product:
     description = db.Column(db.Text)
     updated = db.Column(db.DateTime, default=datetime.now())
 
-    # def __init__(self, *args, **kwargs):
-    #     self.markup = 1.2 if not kwargs.get('markup') else kwargs.get('markup')
-    #     if not kwargs.get('selling_price'):
-    #         self.selling_price = int((kwargs.get('purchase_price') or 0) * self.markup)
+    def __init__(self, *args, **kwargs):
+        if not kwargs.get('selling_price'):
+            self.selling_price = int((kwargs.get('purchase_price') or 0) * kwargs.get('markup'))
 
     def __repr__(self):
         return f'{self.id}.[{self.article}] {self.title}'
 
 
-class CarTire(Product, db.Model):
+class CarTire(db.Model, Product):
     width = db.Column(db.Integer)
     height = db.Column(db.Integer)
     diameter = db.Column(db.String(5))
@@ -78,7 +77,9 @@ class CarTire(Product, db.Model):
     cartype = db.Column(db.String(30))
 
     def __init__(self, *args, **kwargs):
+        kwargs['markup'] = 1.15 if not kwargs.get('markup') else kwargs.get('markup')
         super().__init__(*args, **kwargs)
+        Product.__init__(self, *args, **kwargs)
         self.category = 'Шины легковые'
         self.runflat = True if kwargs.get('runflat') else False
         self.powerload = True if kwargs.get('powerload') else False
@@ -107,7 +108,7 @@ class CarTire(Product, db.Model):
             return 'всесезонная'
 
 
-class CarRim(Product, db.Model):
+class CarRim(db.Model, Product):
     width = db.Column(db.String(20))
     height = db.Column(db.String(20))
     diameter = db.Column(db.String(20))
@@ -121,11 +122,13 @@ class CarRim(Product, db.Model):
     for_car = db.Column(db.String(20))
 
     def __init__(self, *args, **kwargs):
-        super(CarRim, self).__init__(*args, **kwargs)
+        kwargs['markup'] = 1.2 if not kwargs.get('markup') else kwargs.get('markup')
+        super().__init__(*args, **kwargs)
+        Product.__init__(self, *args, **kwargs)
         self.category = 'Диски легковые'
 
 
-class TruckTire(Product, db.Model):
+class TruckTire(db.Model, Product):
     truck_width = db.Column(db.Integer)
     truck_height = db.Column(db.Integer)
     truck_diameter = db.Column(db.String(5))
@@ -138,11 +141,13 @@ class TruckTire(Product, db.Model):
     restored = db.Column(db.String(20))
 
     def __init__(self, *args, **kwargs):
-        super(TruckTire, self).__init__(*args, **kwargs)
+        kwargs['markup'] = 1.15 if not kwargs.get('markup') else kwargs.get('markup')
+        super().__init__(*args, **kwargs)
+        Product.__init__(self, *args, **kwargs)
         self.category = 'Шины грузовые'
 
 
-class TruckRim(Product, db.Model):
+class TruckRim(db.Model, Product):
     width = db.Column(db.Float)
     diameter = db.Column(db.Integer)
     holes = db.Column(db.Integer)
@@ -155,11 +160,13 @@ class TruckRim(Product, db.Model):
     for_car = db.Column(db.String(40))
 
     def __init__(self, *args, **kwargs):
-        super(TruckRim, self).__init__(*args, **kwargs)
+        kwargs['markup'] = 1.2 if not kwargs.get('markup') else kwargs.get('markup')
+        super().__init__(*args, **kwargs)
+        Product.__init__(self, *args, **kwargs)
         self.category = 'Диски грузовые'
 
 
-class Fasteners(Product, db.Model):
+class Fasteners(db.Model, Product):
     fast_type = db.Column(db.String(20))
     outer_diam = db.Column(db.Float)
     inner_diam = db.Column(db.Float)
@@ -172,12 +179,13 @@ class Fasteners(Product, db.Model):
     color = db.Column(db.String(20))
 
     def __init__(self, *args, **kwargs):
-        self.markup = 1.30
-        super(Fasteners, self).__init__(*args, **kwargs)
+        kwargs['markup'] = 1.3 if not kwargs.get('markup') else kwargs.get('markup')
+        super().__init__(*args, **kwargs)
+        Product.__init__(self, *args, **kwargs)
         self.category = 'Колёсный крепёж'
 
 
-class Secrets(Product, db.Model):
+class Secrets(db.Model, Product):
     lock_type = db.Column(db.String(20))
     diameter = db.Column(db.String(5))    # e.g. M14
     length = db.Column(db.Float)
@@ -186,12 +194,13 @@ class Secrets(Product, db.Model):
     head_form = db.Column(db.String(20))
 
     def __init__(self, *args, **kwargs):
-        self.markup = 1.30
-        super(Secrets, self).__init__(*args, **kwargs)
+        kwargs['markup'] = 1.3 if not kwargs.get('markup') else kwargs.get('markup')
+        super().__init__(*args, **kwargs)
+        Product.__init__(self, *args, **kwargs)
         self.category = 'Секретки'
 
 
-class Battery(Product, db.Model):
+class Battery(db.Model, Product):
     capacity = db.Column(db.Integer)
     polarity = db.Column(db.String(20))
     cleats = db.Column(db.String(20))
@@ -200,13 +209,14 @@ class Battery(Product, db.Model):
     dimensions = db.Column(db.String(20))
 
     def __init__(self, *args, **kwargs):
-        self.markup = 1.30
-        super(Battery, self).__init__(*args, **kwargs)
+        kwargs['markup'] = 1.25 if not kwargs.get('markup') else kwargs.get('markup')
+        super().__init__(*args, **kwargs)
+        Product.__init__(self, *args, **kwargs)
         self.category = 'Аккумуляторы'
 
         if not kwargs.get('article'):
-            self.article = 'SAK' + datetime.now().strftime('%d%m%Y') + str(kwargs.get('voltage')) + \
-                            str(int(kwargs.get('capacity'))) + str(kwargs.get('current'))
+            self.article = 'SAK' + datetime.now().strftime('%d%m%Y') + str(kwargs.get('voltage') or 'x') + \
+                            str(int(kwargs.get('capacity') or 0)) + str(kwargs.get('current') or 'x')
 
 
 product_model = {
@@ -322,8 +332,29 @@ class XMLPriceList(PriceList):
 
 class XLSPriceList(PriceList):
 
-    def __init__(self, price_dict, products):
+    def __init__(self, price_dict, products, file=None):
         super().__init__(price_dict, products)
+        self.local_file = 'sak.xls' if self.supplier == 'sak' else file
+        self.sheet = xlrd.open_workbook(os.path.join('prices', self.local_file),
+                                        encoding_override='cp1251').sheet_by_index(0)
+        self._sak_generator = self._sak_generate_product()
 
     def extract_next_product_parameters(self):
-        pass
+        try:
+            if self.supplier == 'sak':  # add other suppliers then
+                product_parameters = next(self._sak_generator)
+                return product_parameters
+        except StopIteration:
+            return None
+
+    def _sak_generate_product(self):
+        first_row = [row for row in range(self.sheet.nrows) if 'Аккумуляторы' in self.sheet.cell(row, 0).value][0] + 1
+        last_row = [row for row in range(self.sheet.nrows) if 'Акссесуары' in self.sheet.cell(row, 0).value][0]
+
+        for i in range(first_row, last_row):
+            product_parameters = dict(supplier=self.supplier)
+            if self.sheet.cell(i, 2).value:
+                product_parameters['title'] = self.sheet.cell(i, 0).value
+                product_parameters['purchase_price'] = self.sheet.cell(i, 3).value
+                product_parameters['count'] = int(self.sheet.cell(i, 4).value)
+                yield product_parameters

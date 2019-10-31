@@ -103,31 +103,33 @@ def update_db_entirely():
 
 
 # delete after usage
-def sak_fill_db(sheet):
+def sak_fill_db():
     """ Uploads SAK goods to db from the prepared file """
-    # book = xlrd.open_workbook(os.path.join('prices', 'sak.xlsx'), encoding_override="cp1252")
-    # sheet = book.sheet_by_index(0)
-    for i in range(1, 10):     # sheet.nrows
+    book = xlrd.open_workbook(os.path.join('prices', 'sakbase.xlsx'), encoding_override='cp1252')
+    sheet = book.sheet_by_index(0)
+    for i in range(1, sheet.nrows):
         params = dict(supplier='sak')
         params['title'] = sheet.cell(i, 0).value
         params['brand'] = sheet.cell(i, 9).value
         params['img'] = sheet.cell(i, 4).value
         params['address'] = 'Есенина'
-        params['count'] = sheet.cell(i, 6).value
+        params['count'] = int(sheet.cell(i, 6).value or 0)
         # params['markup'] = sheet.cell(i, 0).value
-        params['selling_price'] = sheet.cell(i, 5).value
-        params['weight'] = sheet.cell(i, 7).value
+        params['selling_price'] = int(sheet.cell(i, 5).value or 0)
+        params['weight'] = float(sheet.cell(i, 7).value or 0)
         params['origin'] = sheet.cell(i, 8).value
         params['manufacturer'] = sheet.cell(i, 14).value
         params['description'] = sheet.cell(i, 1).value
-        params['capacity'] = sheet.cell(i, 10).value
+        params['capacity'] = int(sheet.cell(i, 10).value or 0)
         params['polarity'] = sheet.cell(i, 13).value
         params['cleats'] = sheet.cell(i, 12).value
-        params['current'] = sheet.cell(i, 15).value
-        params['voltage'] = sheet.cell(i, 11).value
-        # akb = Battery(**params)
-        # add_to_db(akb)
-        yield params
+        params['current'] = int(sheet.cell(i, 15).value or 0)
+        params['voltage'] = int(sheet.cell(i, 11).value or 0)
+        try:
+            akb = Battery(**params)
+            add_to_db(akb)
+        except:
+            continue
 
 
 if __name__ == '__main__':

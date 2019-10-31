@@ -40,6 +40,11 @@ trektyre = {
     'truck_tires_for_order': 'https://trektyre.ru/load-price-xml?url=2'
 }
 
+sak = {
+    'title': 'sak',
+    'batteries': 'xls'
+}
+
 # all_product_parameters[parameter][supplier] = supplier's tag title in XML
 all_product_parameters = {
     # common parameters

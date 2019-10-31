@@ -1,4 +1,5 @@
 # todo:
+- товары Север авто выкачивать из 1 прайса, сделать кэш для проверки времени скачивания
 - написать тесты: создание экземпляров классов моделей
 - написать скрипт скачивания изображений АКБ с insales
 - добавить логгирование
@@ -6,12 +7,15 @@
 
 
 # done:
+
+-----------------------------------------------------------------
+- worked on XLSPriceList
+- fixed Product inheritance
 - added xls extractor
 - worked on manage.update_db_category
 - excluded extra tags in pwrs
 - added fasteners & secrets
 - divided PriceList subclasses
------------------------------------------------------------------
 - worked on remaining models
 - reformatted db structure
 - excluded class PriceHandler

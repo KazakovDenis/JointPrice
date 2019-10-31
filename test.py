@@ -1,12 +1,13 @@
 # python -m unittest -v test.py
 import unittest
-from models import XMLPriceList
+from models import XMLPriceList, XLSPriceList
 from config import *
 
 
 s = XMLPriceList(svrauto, 'car_tires')
 p = XMLPriceList(pwrs, 'car_tires')
 t = XMLPriceList(trektyre, 'car_tires_for_order')
+b = XLSPriceList(sak, 'batteries')
 
 sg = s._generate_product()
 pg = p._generate_product()
