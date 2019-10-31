@@ -58,6 +58,7 @@ class Product:
         if not kwargs.get('selling_price'):
             self.selling_price = int((kwargs.get('purchase_price') or 0) * kwargs.get('markup'))
 
+    # todo: не наследуется
     def __repr__(self):
         return f'{self.id}.[{self.article}] {self.title}'
 
@@ -215,8 +216,7 @@ class Battery(db.Model, Product):
         self.category = 'Аккумуляторы'
 
         if not kwargs.get('article'):
-            self.article = 'SAK' + datetime.now().strftime('%d%m%Y') + str(kwargs.get('voltage') or 'x') + \
-                            str(int(kwargs.get('capacity') or 0)) + str(kwargs.get('current') or 'x')
+            self.article = 'AK' + str(hash(kwargs.get('title')))[:10]
 
 
 product_model = {
