@@ -1,4 +1,5 @@
 # todo:
+- проработать наценки АКБ
 - товары Север авто выкачивать из 1 прайса, сделать кэш для проверки времени скачивания
 - написать скрипт скачивания изображений АКБ с insales
 - добавить логгирование
@@ -6,9 +7,10 @@
 
 
 # done:
+- added markups for batteries
+-----------------------------------------------------------------
 - reformatted empty articles to hashes
 - worked on tests
------------------------------------------------------------------
 - worked on XLSPriceList
 - fixed Product inheritance
 - added xls extractor

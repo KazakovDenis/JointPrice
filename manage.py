@@ -102,11 +102,19 @@ def update_db_entirely():
     [update_db_by(supplier) for supplier in suppliers]
 
 
+def get_markups() -> dict:
+    with open(os.path.join('data', 'markups.txt'), 'r', encoding='utf-8') as file:
+        rows = file.readlines()
+        markups = {row.split('=')[0].strip(): float(row.split('=')[-1].strip()) for row in rows if '#' not in row}
+    return markups
+
+
 # delete after usage
 def sak_fill_db():
     """ Uploads SAK goods to db from the prepared file """
     book = xlrd.open_workbook(os.path.join('prices', 'sakbase.xlsx'), encoding_override='cp1252')
     sheet = book.sheet_by_index(0)
+    markups = get_markups()
     for i in range(1, sheet.nrows):
         params = dict(supplier='sak')
         params['title'] = sheet.cell(i, 0).value
@@ -114,7 +122,7 @@ def sak_fill_db():
         params['img'] = sheet.cell(i, 4).value
         params['address'] = 'Есенина'
         params['count'] = int(sheet.cell(i, 6).value or 0)
-        # params['markup'] = sheet.cell(i, 0).value
+        params['markup'] = [markups[brand] for brand in markups if brand in params['title']][0]
         params['selling_price'] = int(sheet.cell(i, 5).value or 0)
         params['weight'] = float(sheet.cell(i, 7).value or 0)
         params['origin'] = sheet.cell(i, 8).value
@@ -128,7 +136,8 @@ def sak_fill_db():
         try:
             akb = Battery(**params)
             add_to_db(akb)
-        except:
+        except Exception as e:
+            print(e)
             continue
 
 
